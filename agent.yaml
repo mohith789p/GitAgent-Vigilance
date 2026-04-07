@@ -1,0 +1,14 @@
+name: "GitAgent-Vigilance"
+version: "1.0.0"
+description: "Adversarial security reviewer focused on logic flow and edge-case failure modes."
+model: "gemini-3-flash-ultra"
+skills:
+  - "vulnerability-test"
+  - "edge-case-test"
+tools:
+  - name: "github_diff_parser"
+    type: "mcp_server"
+    endpoint: "http://localhost:8080/github"
+  - name: "code_graph_rag"
+    type: "vector_db"
+    index: "current_repo_main"
