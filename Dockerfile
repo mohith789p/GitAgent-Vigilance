@@ -1,7 +1,7 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 # Install system dependencies (git for parsing repository, bash for shell tasks)
-RUN apk update && apk add --no-cache git bash
+RUN apt-get update && apt-get install -y git bash && rm -rf /var/lib/apt/lists/*
 
 # Define a stable root home layout so the Gemini CLI doesn't throw ENOENT on config dirs
 ENV HOME=/app
