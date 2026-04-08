@@ -32,7 +32,8 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx @open-gitagent/gitagent run \
+          npm install -g @google/gemini-cli
+          npx --yes @open-gitagent/gitagent run \
             -d . \
             -a gemini \
             -p "Review for OWASP logic flaws and edge-case state failures."
