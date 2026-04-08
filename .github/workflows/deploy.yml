@@ -7,7 +7,6 @@ on:
     types: [opened, synchronize, reopened]
     branches: [main, master, develop]
 
-# Prevents redundant parallel runs for the same branch/PR to save API credits
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -26,16 +25,14 @@ jobs:
       - name: "Clone Target Repository"
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensures deep clone for accurate git-diffs and codebase context
+          fetch-depth: 0 
 
       - name: "Execute Vigilance GitAgent"
-        uses: open-gitagent/github-action@v1
-        with:
-          # Dynamically resolved to the current repository avoiding hardcoded references
-          agent-url: "${{ github.server_url }}/${{ github.repository }}"
-          adapter: "gemini"
-          task: "Review for OWASP logic flaws and edge-case state failures."
-          fail-on-severity: "high"
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx @open-gitagent/gitagent run \
+            -d . \
+            -a gemini \
+            -p "Review for OWASP logic flaws and edge-case state failures."
