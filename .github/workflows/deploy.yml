@@ -27,15 +27,19 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: "Execute Vigilance GitAgent"
+      - name: "Execute Vigilance via Container"
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm install -g @google/gemini-cli
-          mkdir -p ~/.gemini
-          npx --yes @open-gitagent/gitagent run \
-            -d . \
+          docker build -t gitagent-local .
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            -e GOOGLE_API_KEY="${GOOGLE_API_KEY}" \
+            -e GEMINI_API_KEY="${GEMINI_API_KEY}" \
+            -e GITHUB_TOKEN="${GITHUB_TOKEN}" \
+            gitagent-local \
+            -d /workspace \
             -a gemini \
             -p "Review for OWASP logic flaws and edge-case state failures."
