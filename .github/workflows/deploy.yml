@@ -29,14 +29,12 @@ jobs:
 
       - name: "Execute Vigilance via Container"
         env:
-          GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker build -t gitagent-local .
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
-            -e GOOGLE_API_KEY="${GOOGLE_API_KEY}" \
             -e GEMINI_API_KEY="${GEMINI_API_KEY}" \
             -e GITHUB_TOKEN="${GITHUB_TOKEN}" \
             gitagent-local \
