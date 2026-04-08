@@ -1,46 +1,41 @@
 name: "Vigilance-7: Adversarial Security Audit"
 
 on:
+  push:
+    branches: [main, master, develop]
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [main, master, develop]
 
-# Prevent "Review Loops" and save your API credits
+# Prevents redundant parallel runs for the same branch/PR to save API credits
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read      # To see the code
-  pull-requests: write # To post the adversarial feedback
+  contents: read
+  pull-requests: write
 
 jobs:
   adversarial-audit:
     name: "Logic & Vulnerability Scan"
     runs-on: ubuntu-latest
-    timeout-minutes: 10 # Hard kill-switch to prevent run-away costs
+    timeout-minutes: 15
 
     steps:
       - name: "Clone Target Repository"
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Pull history so Agent can see context
+          fetch-depth: 0 # Ensures deep clone for accurate git-diffs and codebase context
 
       - name: "Execute Vigilance GitAgent"
         uses: open-gitagent/github-action@v1
         with:
-          # Pointer to your Agent's "Brain" repo
-          agent-url: "https://github.com/mohith789p/GitAgent-Vigilance"
-          
-          # Use the lightweight 2026 Cloud Adapter
-          adapter: "gemini" 
-          
-          # Priority Task for the Agent
+          # Dynamically resolved to the current repository avoiding hardcoded references
+          agent-url: "${{ github.server_url }}/${{ github.repository }}"
+          adapter: "gemini"
           task: "Review for OWASP logic flaws and edge-case state failures."
-          
-          # Optional: Only fail the build on 'High' or 'Critical' issues
           fail-on-severity: "high"
-          
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
