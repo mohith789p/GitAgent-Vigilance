@@ -1,0 +1,5 @@
+name: "github-diff-parser"
+description: "Parse diffs from GitHub."
+input_schema:
+  type: "object"
+  properties: {}

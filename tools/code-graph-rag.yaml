@@ -1,0 +1,5 @@
+name: "code-graph-rag"
+description: "Vector DB semantic search for the repo."
+input_schema:
+  type: "object"
+  properties: {}

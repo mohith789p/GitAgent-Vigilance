@@ -1,7 +1,6 @@
 ---
-name: "Edge-Case Stress Test"
-id: "edge-case-test"
-capabilities: ["boundary_analysis", "failure_mode_simulation"]
+name: edge-case-test
+description: "Edge-Case Stress Test for evaluating boundary limits, failing modes, and concurrency."
 ---
 
 # Instructions for Edge Case Analysis
