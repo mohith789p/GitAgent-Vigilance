@@ -1,0 +1,46 @@
+name: "Vigilance-7: Adversarial Security Audit"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, master, develop]
+
+# Prevent "Review Loops" and save your API credits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read      # To see the code
+  pull-requests: write # To post the adversarial feedback
+
+jobs:
+  adversarial-audit:
+    name: "Logic & Vulnerability Scan"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # Hard kill-switch to prevent run-away costs
+
+    steps:
+      - name: "Clone Target Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Pull history so Agent can see context
+
+      - name: "Execute Vigilance GitAgent"
+        uses: open-gitagent/github-action@v1
+        with:
+          # Pointer to your Agent's "Brain" repo
+          agent-url: "https://github.com/mohith789p/GitAgent-Vigilance"
+          
+          # Use the lightweight 2026 Cloud Adapter
+          adapter: "gemini" 
+          
+          # Priority Task for the Agent
+          task: "Review for OWASP logic flaws and edge-case state failures."
+          
+          # Optional: Only fail the build on 'High' or 'Critical' issues
+          fail-on-severity: "high"
+          
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
